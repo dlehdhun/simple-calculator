@@ -1,3 +1,1 @@
-function solution(record) {
-
-}
+document.getElementById(calc-form)
