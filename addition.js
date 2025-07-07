@@ -1,39 +1,52 @@
 const exprForm = document.getElementById("calc-form")
     .addEventListener("submit", function (e) {
-        e.preventDefault(); // html로 못가게 막음
+        e.preventDefault(); // 폼 제출 막음
 
         const exprInput = document.getElementById("expression");
         const userText = exprInput.value.trim();
 
-        if (userText === "exit") {
-            alert("종료");
-        } else if (userText === ""){
-            alert("값이 없습니다.");
-        } else {
+        if (checkdateInput(userText)) {
             main(userText);
         }
     });
 
-function main(userText) {
-    const sliceText = parseExpr(userText);
-    const slicenumText = tokenize(sliceText);
-    const postfix = calcPriority(slicenumText);
-    const [result] = basic_ari(postfix);
-    printMessage(result);
+function checkdateInput(userText) {
+    if (userText === "exit") {
+        alert("종료");
+        return false;
+    }
+    if (userText === "") {
+        alert("값이 없습니다.");
+        return false;
+    }
+    const Values = /^[\d+\-*/() ]+$/;
+    if (!Values.test(userText)) {
+        alert("잘못된 수식입니다. 숫자와 + - * / () 만 사용할 수 있습니다.");
+        return false;
+    }
+    return true;
 }
 
-// 문자열 파싱
+function main(userText) {
+    const sliceText = parseExpr(userText);
+    const convertedTokens = tokenize(sliceText);
+    const postfix = calcPriority(convertedTokens);
+    const [result] = evaluatePostfix(postfix);
+    showResult(result);
+}
+
+// 문자열 파싱 => 숫자/연산자 배열
 function parseExpr(tokens) {
     const sliceText = tokens.match(/\d+|[+\-*/()]/g);
     return sliceText;
 }
 
-// 숫자인 문자를 숫자로 바꾸기
+// 숫자 문자열은 숫자로 변환
 function tokenize(sliceText) {
     return sliceText.map(a => isNaN(a) ? a : Number(a));
 }
 
-// 우선순위 계산하기 (후위표기식)
+// 후위 표기식 변환
 function calcPriority(sliceText) {
     const output = [];
     const stack = [];
@@ -65,39 +78,39 @@ function calcPriority(sliceText) {
     return output;
 }
 
-// 후위표기식 하나씩 분리해서 ari로 보내기
-function basic_ari(ans) {
+// 후위 표기식 계산
+function evaluatePostfix(ans) {
     const stack = [];
 
     for (let token of ans) {
         if (typeof token === 'number') {
             stack.push(token)
         } else {
-            let a = stack.pop();
-            let b = stack.pop();
-            stack.push(ari(a, b, token));
+            let left = stack.pop();
+            let right = stack.pop();
+            stack.push(calculate(left, right, token));
         }
     }
     return stack;
 }
 
-// 계산하기
-function ari(a, b, token) {
-    switch (token) {
+// 연산 처리
+function calculate(left, right, operator) {
+    switch (operator) {
         case "+":
-            return (a + b);
+            return (left + right);
         case "-":
-            return (b - a);
+            return (right - left);
         case "*":
-            return (a * b);
+            return (left * right);
         case "/":
-            const num = b / a;
+            const num = right / left;
             return Number.isInteger(num) ? num : Number(num.toFixed(2));
     }
 }
 
 // 출력하기
-function printMessage(result) {
+function showResult(result) {
     const results = document.getElementById("result");
     results.innerText = `결과: ${result}`;
 }
