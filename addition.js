@@ -28,26 +28,30 @@ function checkdateInput(userText) {
 }
 
 function main(userText) {
-    const sliceText = parseExpr(userText);
-    const convertedTokens = tokenize(sliceText);
+    const tokens = parseExpr(userText);
+
+    const convertedTokens = tokenize(tokens);
+
     const postfix = calcPriority(convertedTokens);
+
     const [result] = evaluatePostfix(postfix);
+    
     showResult(result);
 }
 
 // 문자열 파싱 => 숫자/연산자 배열
 function parseExpr(tokens) {
-    const sliceText = tokens.match(/\d+|[+\-*/()]/g);
-    return sliceText;
+    const tokensResult = tokens.match(/\d+|[+\-*/()]/g);
+    return tokensResult;
 }
 
 // 숫자 문자열은 숫자로 변환
-function tokenize(sliceText) {
-    return sliceText.map(a => isNaN(a) ? a : Number(a));
+function tokenize(tokens) {
+    return tokens.map(a => isNaN(a) ? a : Number(a));
 }
 
 // 후위 표기식 변환
-function calcPriority(sliceText) {
+function calcPriority(tokens) {
     const output = [];
     const stack = [];
     const priority = {
@@ -57,7 +61,7 @@ function calcPriority(sliceText) {
         '/': 2,
     };
 
-    for (let token of sliceText) {
+    for (let token of tokens) {
         if (typeof token === 'number') {
             output.push(token);
         } else {
@@ -79,10 +83,10 @@ function calcPriority(sliceText) {
 }
 
 // 후위 표기식 계산
-function evaluatePostfix(ans) {
+function evaluatePostfix(postfix) {
     const stack = [];
 
-    for (let token of ans) {
+    for (let token of postfix) {
         if (typeof token === 'number') {
             stack.push(token)
         } else {
