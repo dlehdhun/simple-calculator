@@ -117,6 +117,4 @@ function calculate(left, right, operator) {
 function showResult(result) {
     const results = document.getElementById("result");
     results.innerText = `결과: ${result}`;
-    console.log("hi");
-    console.log("hello");
 }
