@@ -35,7 +35,7 @@ function main(userText) {
     const postfix = calcPriority(convertedTokens);
 
     const [result] = evaluatePostfix(postfix);
-    
+
     showResult(result);
 }
 
@@ -117,4 +117,5 @@ function calculate(left, right, operator) {
 function showResult(result) {
     const results = document.getElementById("result");
     results.innerText = `결과: ${result}`;
+    console.log("hi");
 }
